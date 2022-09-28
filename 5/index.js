@@ -1,7 +1,9 @@
 const words = document.querySelectorAll('.main__word');
 const wordsCount = document.querySelector('.main__words-count');
 
-let blockFilter = false;
+let lastInput = null;
+let waitNewInput = 400;  // delay between last oninput and filtering, ms
+
 
 function filter(entry = 'all') {
     const regexp = new RegExp(entry.replaceAll('ё', 'е')
@@ -56,14 +58,14 @@ function pretty() {
 }
 
 document.querySelector('.main__input').oninput = function() {
-    if ( !blockFilter ) {
-        blockFilter = true;
+    lastInput = new Date();
 
-        setTimeout(input => {
-            blockFilter = false;
+    setTimeout(function(input) {
+        let diff = new Date() - lastInput;  // ms
+
+        if ( diff >= waitNewInput )
             filter(input.value);
-        }, 400, this);
-    }
+    }, waitNewInput, this);
 };
 
 pretty();
